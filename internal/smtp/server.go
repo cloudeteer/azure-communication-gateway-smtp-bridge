@@ -58,6 +58,7 @@ func (s *Server) Start() error {
 	if err != nil {
 		return fmt.Errorf("error starting SMTP server: %w", err)
 	}
+
 	s.listener = listener
 
 	for {
@@ -69,12 +70,14 @@ func (s *Server) Start() error {
 				return nil
 			default:
 			}
+
 			if err != nil {
 				return fmt.Errorf("connection error: %w", err)
 			}
 		}
 
 		s.wg.Add(1)
+
 		go func() {
 			defer s.wg.Done()
 
@@ -90,6 +93,7 @@ func (s *Server) Close() error {
 	if s.listener != nil {
 		return s.listener.Close()
 	}
+
 	return nil
 }
 
@@ -138,6 +142,7 @@ func (s *Server) handleConnection(conn net.Conn) error {
 		if err != nil {
 			return fmt.Errorf("error reading command: %w", err)
 		}
+
 		line = strings.TrimSpace(line)
 
 		switch {
@@ -178,7 +183,9 @@ func (s *Server) handleConnection(conn net.Conn) error {
 
 				return nil
 			}
+
 			_, _ = writer.WriteString("250 OK\r\n")
+
 			if err = writer.Flush(); err != nil {
 				return fmt.Errorf("error flushing writer: %w", err)
 			}
@@ -228,6 +235,7 @@ func (s *Server) handleConnection(conn net.Conn) error {
 			// Invoke the callback function
 			if err := s.callBackFn(msg); err != nil {
 				_, _ = writer.WriteString(fmt.Sprintf("550 Error processing mail: %v\r\n", err))
+
 				if err = writer.Flush(); err != nil {
 					return fmt.Errorf("error flushing writer: %w", err)
 				}
@@ -236,6 +244,7 @@ func (s *Server) handleConnection(conn net.Conn) error {
 			}
 
 			_, _ = writer.WriteString("250 OK\r\n")
+
 			if err = writer.Flush(); err != nil {
 				return fmt.Errorf("error flushing writer: %w", err)
 			}
@@ -251,6 +260,7 @@ func (s *Server) handleConnection(conn net.Conn) error {
 			return nil // Close connection after QUIT command
 		case strings.HasPrefix(line, "NOOP"):
 			_, _ = writer.WriteString("250 OK\r\n")
+
 			if err = writer.Flush(); err != nil {
 				return fmt.Errorf("error flushing writer: %w", err)
 			}
@@ -261,6 +271,7 @@ func (s *Server) handleConnection(conn net.Conn) error {
 
 		default:
 			_, _ = writer.WriteString("250 OK\r\n")
+
 			if err = writer.Flush(); err != nil {
 				return fmt.Errorf("error flushing writer: %w", err)
 			}
@@ -271,16 +282,20 @@ func (s *Server) handleConnection(conn net.Conn) error {
 // collectMailData reads the raw mail data from the client until the SMTP end marker (".").
 func collectMailData(reader *bufio.Reader) string {
 	var mailData strings.Builder
+
 	for {
 		line, err := reader.ReadString('\n')
 		if err != nil {
 			return ""
 		}
+
 		if strings.TrimSpace(line) == "." {
 			break
 		}
+
 		mailData.WriteString(line)
 	}
+
 	return strings.TrimSpace(mailData.String())
 }
 
@@ -298,6 +313,7 @@ func parseMailData(data string) (*MailMessage, error) {
 				return v
 			}
 		}
+
 		return ""
 	}
 
@@ -307,6 +323,7 @@ func parseMailData(data string) (*MailMessage, error) {
 
 	contentType := getHeader("Content-Type")
 	mediaType, params, err := mime.ParseMediaType(contentType)
+
 	if err != nil && contentType != "" {
 		return nil, fmt.Errorf("error parsing Content-Type: %w", err)
 	}
@@ -339,17 +356,20 @@ func parseHeadersAndBody(data string) (map[string]string, string, error) {
 	}
 
 	headers := make(map[string]string)
+
 	for _, line := range strings.Split(parts[0], "\r\n") {
 		colonIndex := strings.Index(line, ":")
 		if colonIndex == -1 {
 			return nil, "", fmt.Errorf("invalid header format: %s", line)
 		}
+
 		key := strings.TrimSpace(line[:colonIndex])
 		value := strings.TrimSpace(line[colonIndex+1:])
 		headers[key] = value
 	}
 
 	body := parts[1]
+
 	return headers, body, nil
 }
 
@@ -424,5 +444,6 @@ func (s *Server) parseAddress(line string) (string, error) {
 	}
 
 	address := strings.TrimSpace(parts[1])
+
 	return strings.Trim(address, "<>"), nil
 }

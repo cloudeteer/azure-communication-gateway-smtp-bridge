@@ -80,7 +80,6 @@ Your Name`,
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-
 			logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
 
 			// Create a new server
