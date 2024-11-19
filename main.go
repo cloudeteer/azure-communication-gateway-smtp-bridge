@@ -12,8 +12,8 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
-	"github.com/cloudeteer/azure-communication-gateway-smtp-bridge/email"
-	"github.com/cloudeteer/azure-communication-gateway-smtp-bridge/smtp"
+	"github.com/cloudeteer/azure-communication-gateway-smtp-bridge/internal/email"
+	"github.com/cloudeteer/azure-communication-gateway-smtp-bridge/internal/smtp"
 )
 
 func main() {

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	smtpserver "github.com/cloudeteer/azure-communication-gateway-smtp-bridge/smtp"
+	smtpserver "github.com/cloudeteer/azure-communication-gateway-smtp-bridge/internal/smtp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
