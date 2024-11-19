@@ -47,11 +47,6 @@ func NewServer(address string, logger *slog.Logger, callback CallBackFn) *Server
 	}
 }
 
-type Session struct {
-	from string
-	to   string
-}
-
 // Start starts the SMTP server and handles incoming connections.
 func (s *Server) Start() error {
 	listener, err := net.Listen("tcp", s.address)
@@ -90,8 +85,12 @@ func (s *Server) Start() error {
 
 // Close shuts down the server.
 func (s *Server) Close() error {
-	if s.listener != nil {
-		return s.listener.Close()
+	if s.listener == nil {
+		return errors.New("server already closed")
+	}
+
+	if err := s.listener.Close(); err != nil {
+		return fmt.Errorf("error closing listener: %w", err)
 	}
 
 	return nil
@@ -113,9 +112,9 @@ func (s *Server) Shutdown() error {
 // handleConnection processes an SMTP client connection.
 func (s *Server) handleConnection(conn net.Conn) error {
 	var (
-		err  error
-		from string
-		to   string
+		err      error
+		mailFrom string
+		mailTo   string
 	)
 
 	defer func(conn net.Conn) {
@@ -152,7 +151,7 @@ func (s *Server) handleConnection(conn net.Conn) error {
 
 		case strings.HasPrefix(line, "MAIL FROM"):
 			// Handle MAIL FROM command
-			if from, err = s.parseAddress(line); err != nil {
+			if mailFrom, err = s.parseAddress(line); err != nil {
 				if _, err = writer.WriteString(fmt.Sprintf("550 Error: %v\r\n", err)); err != nil {
 					return fmt.Errorf("error writing error message: %w", err)
 				}
@@ -172,7 +171,7 @@ func (s *Server) handleConnection(conn net.Conn) error {
 				return fmt.Errorf("error flushing writer: %w", err)
 			}
 		case strings.HasPrefix(line, "RCPT TO"):
-			if to, err = s.parseAddress(line); err != nil {
+			if mailTo, err = s.parseAddress(line); err != nil {
 				if _, err = writer.WriteString(fmt.Sprintf("550 Error: %v\r\n", err)); err != nil {
 					return fmt.Errorf("error writing error message: %w", err)
 				}
@@ -224,12 +223,12 @@ func (s *Server) handleConnection(conn net.Conn) error {
 				return nil
 			}
 
-			if msg.From != from {
-				msg.From = from
+			if msg.From != mailFrom {
+				msg.From = mailFrom
 			}
 
-			if msg.To != to {
-				msg.To = to
+			if msg.To != mailTo {
+				msg.To = mailTo
 			}
 
 			// Invoke the callback function

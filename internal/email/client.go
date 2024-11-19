@@ -25,7 +25,7 @@ func (client *Client) SendEmail(ctx context.Context, email *Email) error {
 		return fmt.Errorf("failed to marshal email: %w", err)
 	}
 
-	url := fmt.Sprintf("%s/emails:send?api-version=2023-03-31", client.endpoint)
+	url := client.endpoint + "/emails:send?api-version=2023-03-31"
 	bodyBuffer := bytes.NewBuffer(postBody)
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bodyBuffer)

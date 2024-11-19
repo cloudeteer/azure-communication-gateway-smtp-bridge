@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -50,7 +51,7 @@ func run(logger *slog.Logger) error {
 
 	connectionString, ok := os.LookupEnv("COMMUNICATION_SERVICES_CONNECTION_STRING")
 	if !ok {
-		return fmt.Errorf("COMMUNICATION_SERVICES_CONNECTION_STRING is not set")
+		return errors.New("COMMUNICATION_SERVICES_CONNECTION_STRING is not set")
 	}
 
 	emailClient := email.NewClient(connectionString, httpClient, cred)
@@ -90,7 +91,12 @@ func run(logger *slog.Logger) error {
 	case <-ctx.Done():
 		logger.Info("Shutting down SMTP server")
 
-		return server.Shutdown()
+		err := server.Shutdown()
+		if err != nil {
+			return fmt.Errorf("failed to shutdown SMTP server: %w", err)
+		}
+
+		return nil
 	case err := <-errCh:
 		return err
 	}
