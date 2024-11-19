@@ -110,6 +110,8 @@ func (s *Server) Shutdown() error {
 }
 
 // handleConnection processes an SMTP client connection.
+//
+//nolint:gocognit
 func (s *Server) handleConnection(conn net.Conn) error {
 	var (
 		err      error
@@ -316,8 +318,8 @@ func parseMailData(data string) (*MailMessage, error) {
 		return ""
 	}
 
-	from := getHeader("From")
-	to := getHeader("To")
+	mailFrom := getHeader("From")
+	mailTo := getHeader("To")
 	subject := getHeader("Subject")
 
 	contentType := getHeader("Content-Type")
@@ -328,8 +330,8 @@ func parseMailData(data string) (*MailMessage, error) {
 	}
 
 	mailMessage := &MailMessage{
-		From:    from,
-		To:      to,
+		From:    mailFrom,
+		To:      mailTo,
 		Subject: subject,
 	}
 

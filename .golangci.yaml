@@ -9,6 +9,8 @@ linters:
     - mnd
     - exportloopref
     - err113
+    - tparallel
+    - paralleltest
 
 issues:
   exclude-rules:

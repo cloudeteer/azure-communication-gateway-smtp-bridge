@@ -67,8 +67,11 @@ func run(logger *slog.Logger) error {
 		return emailClient.SendEmail(context.Background(), &email.Email{
 			SenderAddress: mail.From,
 			Recipients: email.Recipients{
-				To: []email.EmailAddress{
-					{mail.To, mail.To},
+				To: []email.Address{
+					{
+						Address:     mail.To,
+						DisplayName: mail.To,
+					},
 				},
 			},
 			Content: email.Content{

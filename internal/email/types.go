@@ -13,21 +13,21 @@ type Client struct {
 }
 
 type Email struct {
-	Recipients    Recipients     `json:"recipients"`
-	SenderAddress string         `json:"senderAddress"`
-	Content       Content        `json:"content"`
-	Tracking      bool           `json:"disableUserEngagementTracking"`
-	Importance    string         `json:"importance"`
-	ReplyTo       []EmailAddress `json:"replyTo"`
+	Recipients    Recipients `json:"recipients"`
+	SenderAddress string     `json:"senderAddress"`
+	Content       Content    `json:"content"`
+	Tracking      bool       `json:"disableUserEngagementTracking"`
+	Importance    string     `json:"importance"`
+	ReplyTo       []Address  `json:"replyTo"`
 }
 
 type Recipients struct {
-	To  []EmailAddress `json:"to"`
-	CC  []EmailAddress `json:"cc"`
-	BCC []EmailAddress `json:"bcc"`
+	To  []Address `json:"to"`
+	CC  []Address `json:"cc"`
+	BCC []Address `json:"bcc"`
 }
 
-type EmailAddress struct {
+type Address struct {
 	DisplayName string `json:"displayName"`
 	Address     string `json:"address"`
 }
@@ -42,7 +42,7 @@ type ErrorResponse struct {
 	Error CommunicationError `json:"error"`
 }
 
-// CommunicationError contains the error code and message
+// CommunicationError contains the error code and message.
 type CommunicationError struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`

@@ -55,7 +55,7 @@ func (client *Client) SendEmail(ctx context.Context, email *Email) error {
 
 		err = json.NewDecoder(resp.Body).Decode(&commError)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to decode error response: %w", err)
 		}
 
 		return fmt.Errorf("status code: %d, error message: %s", resp.StatusCode, commError.Error.Message)

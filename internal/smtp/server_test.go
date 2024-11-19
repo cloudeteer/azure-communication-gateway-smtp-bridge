@@ -108,7 +108,7 @@ Your Name`,
 
 			msg := []byte(fmt.Sprintf("From: %s\r\nTo: %s\r\n"+
 				"Subject: %s\r\n"+
-				"%s\r\n", test.from, test.to, test.subject, test.body))
+				"%s\r\n", test.from, test.to, test.subject, body))
 
 			err := smtp.SendMail("localhost:1515", nil, test.from, []string{test.to}, msg)
 			require.NoError(t, err)
