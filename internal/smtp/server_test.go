@@ -2,7 +2,9 @@ package smtp_test
 
 import (
 	"fmt"
+	"log/slog"
 	"net/smtp"
+	"os"
 	"strings"
 	"testing"
 
@@ -79,8 +81,10 @@ Your Name`,
 	} {
 		t.Run(test.name, func(t *testing.T) {
 
+			logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
+
 			// Create a new server
-			s := smtpserver.NewServer("localhost:1515", func(mail *smtpserver.MailMessage) error {
+			s := smtpserver.NewServer("localhost:1515", logger, func(mail *smtpserver.MailMessage) error {
 				assert.Equal(t, test.expectedPlainText, strings.ReplaceAll(mail.PlainText, "\r\n", "\n"))
 				assert.Equal(t, test.expectedHTMLText, strings.ReplaceAll(mail.HTMLText, "\r\n", "\n"))
 				assert.Equal(t, test.subject, mail.Subject)

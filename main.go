@@ -80,7 +80,7 @@ func run(logger *slog.Logger) error {
 
 	go func() {
 		if err := server.Start(); err != nil {
-			fmt.Printf("Error: %v\n", err)
+			errCh <- fmt.Errorf("failed to start SMTP server: %w", err)
 		}
 
 		close(errCh)
