@@ -62,7 +62,7 @@ func run(logger *slog.Logger) error {
 
 	errCh := make(chan error, 1)
 
-	server := smtp.NewServer(":2525", func(mail *smtp.MailMessage) error {
+	server := smtp.NewServer(":2525", logger, func(mail *smtp.MailMessage) error {
 		return emailClient.SendEmail(context.Background(), &email.Email{
 			SenderAddress: mail.From,
 			Recipients: email.Recipients{
